@@ -4,6 +4,8 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using Xunit;
+
 namespace Payvision.CodeChallenge.Refactoring.FraudDetection.Tests
 {
     using System;
@@ -11,13 +13,10 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection.Tests
     using System.IO;
     using System.Linq;
     using FluentAssertions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    [TestClass]
     public class FraudRadarTests
     {
-        [TestMethod]
-        [DeploymentItem("./Files/OneLineFile.txt", "Files")]
+        [Fact]
         public void CheckFraud_OneLineFile_NoFraudExpected()
         {
             var result = ExecuteTest(Path.Combine(Environment.CurrentDirectory, "Files", "OneLineFile.txt"));
@@ -26,8 +25,7 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection.Tests
             result.Count().ShouldBeEquivalentTo(0, "The result should not contains fraudulent lines");
         }
 
-        [TestMethod]
-        [DeploymentItem("./Files/TwoLines_FraudulentSecond.txt", "Files")]
+        [Fact]
         public void CheckFraud_TwoLines_SecondLineFraudulent()
         {
             var result = ExecuteTest(Path.Combine(Environment.CurrentDirectory, "Files", "TwoLines_FraudulentSecond.txt"));
@@ -38,8 +36,7 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection.Tests
             result.First().OrderId.Should().Be(2, "The first line is not fraudulent");
         }
 
-        [TestMethod]
-        [DeploymentItem("./Files/ThreeLines_FraudulentSecond.txt", "Files")]
+        [Fact]
         public void CheckFraud_ThreeLines_SecondLineFraudulent()
         {
             var result = ExecuteTest(Path.Combine(Environment.CurrentDirectory, "Files", "ThreeLines_FraudulentSecond.txt"));
@@ -50,8 +47,7 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection.Tests
             result.First().OrderId.Should().Be(2, "The first line is not fraudulent");
         }
 
-        [TestMethod]
-        [DeploymentItem("./Files/FourLines_MoreThanOneFraudulent.txt", "Files")]
+        [Fact]
         public void CheckFraud_FourLines_MoreThanOneFraudulent()
         {
             var result = ExecuteTest(Path.Combine(Environment.CurrentDirectory, "Files", "FourLines_MoreThanOneFraudulent.txt"));
