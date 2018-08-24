@@ -42,6 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FraudRadar.cs" />
+    <Compile Include="FraudResult.cs" />
+    <Compile Include="Order.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
