@@ -54,6 +54,8 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection.Tests
 
             result.Should().NotBeNull("The result should not be null.");
             result.Count().ShouldBeEquivalentTo(2, "The result should contains the number of lines of the file");
+            result.First().OrderId.Should().Be(2);
+            result.ElementAt(1).OrderId.Should().Be(4);
         }
 
         

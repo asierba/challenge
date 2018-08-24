@@ -17,16 +17,16 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection
         public IEnumerable<FraudResult> Check(string filePath)
         {
             var orders = ReadOrders(filePath).ToList();
-            return ChecFraud(orders);
+            return CheckFraud(orders);
         }
 
         private static IEnumerable<Order> ReadOrders(string filePath)
         {
             var lines = File.ReadAllLines(filePath);
-            return lines.Select(Order.CreateOrder);
+            return lines.Select(Order.FromCsv);
         }
 
-        private static IEnumerable<FraudResult> ChecFraud(List<Order> orders)
+        private static IEnumerable<FraudResult> CheckFraud(List<Order> orders)
         {
             var fraudResults = new List<FraudResult>();
             for (int i = 0; i < orders.Count; i++)

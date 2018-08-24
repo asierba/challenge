@@ -4,23 +4,23 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection
 {
     public class Order
     {
-        public int OrderId { get; set; }
+        public int OrderId { get; private set; }
 
-        public int DealId { get; set; }
+        public int DealId { get; private set; }
 
-        public string Email { get; set; }
+        public string Email { get; private set; }
 
-        public string Street { get; set; }
+        public string Street { get; private set; }
 
-        public string City { get; set; }
+        public string City { get; private set; }
 
-        public string State { get; set; }
+        public string State { get; private set; }
 
-        public string ZipCode { get; set; }
+        public string ZipCode { get; private set; }
 
-        public string CreditCard { get; set; }
+        public string CreditCard { get; private set; }
 
-        public static Order CreateOrder(string line)
+        public static Order FromCsv(string line)
         {
             var items = line.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
 
@@ -35,7 +35,6 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection
                 ZipCode = items[6],
                 CreditCard = items[7]
             };
-            
             
             return Normalize(order);
         }
