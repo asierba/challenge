@@ -66,8 +66,7 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection
 
             aux[0] = atIndex < 0 ? aux[0].Replace(".", "") : aux[0].Replace(".", "").Remove(atIndex);
 
-            var result = String.Join("@", new string[] {aux[0], aux[1]});
-            return result;
+            return String.Join("@", new string[] {aux[0], aux[1]});
         }
     }
 }

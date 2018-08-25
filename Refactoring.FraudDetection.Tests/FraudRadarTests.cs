@@ -57,7 +57,15 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection.Tests
             result.First().OrderId.Should().Be(2);
             result.ElementAt(1).OrderId.Should().Be(4);
         }
+        
+        [Fact]
+        public void CheckFraud_NormalizedEmails()
+        {
+            var result = ExecuteTest(Path.Combine(Environment.CurrentDirectory, "Files", "NormalizationChecks.txt"));
 
+            result.Should().NotBeNull("The result should not be null.");
+            result.Count().ShouldBeEquivalentTo(2);
+        }
         
 
         private static List<FraudResult> ExecuteTest(string filePath)

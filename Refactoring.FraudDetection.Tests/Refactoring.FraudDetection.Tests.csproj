@@ -82,6 +82,9 @@
     <Content Include="Files\FourLines_MoreThanOneFraudulent.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Files\NormalizationChecks.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Files\TwoLines_FraudulentSecond.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
