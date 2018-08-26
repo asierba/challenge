@@ -4,25 +4,34 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.IO.Abstractions;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Payvision.CodeChallenge.Refactoring.FraudDetection
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-
     public class FraudRadar
     {
+        private readonly IFileSystem _fileSystem;
+
+        public FraudRadar() : this(new FileSystem())
+        {
+        }
+
+        public FraudRadar(IFileSystem fileSystem)
+        {
+            _fileSystem = fileSystem;
+        }
+        
         public IEnumerable<FraudResult> Check(string filePath)
         {
             var orders = ReadOrders(filePath).ToList();
             return CheckFraud(orders);
         }
 
-        private static IEnumerable<Order> ReadOrders(string filePath)
+        private IEnumerable<Order> ReadOrders(string filePath)
         {
-            var lines = File.ReadAllLines(filePath);
+            var lines = _fileSystem.File.ReadAllLines(filePath);
             return lines.Select(Order.FromCsv);
         }
 

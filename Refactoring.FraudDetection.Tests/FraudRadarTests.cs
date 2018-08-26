@@ -4,6 +4,10 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.IO.Abstractions;
+using System.IO.Abstractions.TestingHelpers;
+using System.Security.AccessControl;
+using System.Text;
 using Xunit;
 
 namespace Payvision.CodeChallenge.Refactoring.FraudDetection.Tests
@@ -59,20 +63,35 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection.Tests
         }
         
         [Fact]
-        public void CheckFraud_NormalizedEmails()
+        public void CheckFraud_EmailsAreTheSame()
         {
-            var result = ExecuteTest(Path.Combine(Environment.CurrentDirectory, "Files", "NormalizationChecks.txt"));
+            const string contents = 
+@"1,1,bugs@bunny.com, , , , ,12345689010
+2,1,bugs@BUNNY.com, , , , ,12345689011";
+            var result = CheckFraud(contents);
 
-            result.Should().NotBeNull("The result should not be null.");
-            result.Count().ShouldBeEquivalentTo(2);
+            result.Count().ShouldBeEquivalentTo(1);
         }
-        
+
 
         private static List<FraudResult> ExecuteTest(string filePath)
         {
             var fraudRadar = new FraudRadar();
 
             return fraudRadar.Check(filePath).ToList();
+        }
+
+        private static List<FraudResult> CheckFraud(string contents)
+        {
+            var fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
+            {
+                {
+                    @"file.txt", new MockFileData(contents)
+                },
+            });
+
+            var fraudRadar = new FraudRadar(fileSystem);
+            return fraudRadar.Check(@"file.txt").ToList();
         }
     }
 }
