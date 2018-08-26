@@ -1,13 +1,10 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="FraudRadarTests.cs" company="Payvision">
 //     Payvision Copyright © 2017
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
-using System.Security.AccessControl;
-using System.Text;
 using Xunit;
 
 namespace Payvision.CodeChallenge.Refactoring.FraudDetection.Tests
