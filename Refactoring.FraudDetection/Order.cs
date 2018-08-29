@@ -66,7 +66,28 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection
 
             aux[0] = atIndex < 0 ? aux[0].Replace(".", "") : aux[0].Replace(".", "").Remove(atIndex);
 
-            return String.Join("@", new string[] {aux[0], aux[1]});
+            return String.Join("@", aux[0], aux[1]);
+        }
+        
+        public bool IsAFraudOf(Order otherOrder)
+        {
+            return IsSameDeal(otherOrder)
+                   && !HasSameCreditCard(otherOrder)
+                   && (HasSameEmail(otherOrder) || HasSameAddress(otherOrder));
+        }
+
+        private bool HasSameCreditCard(Order otherOrder) => CreditCard == otherOrder.CreditCard;
+
+        private bool IsSameDeal(Order otherOrder) => DealId == otherOrder.DealId;
+
+        private bool HasSameEmail(Order otherOrder) => Email == otherOrder.Email;
+
+        private bool HasSameAddress(Order otherOrder)
+        {
+            return State == otherOrder.State
+                   && ZipCode == otherOrder.ZipCode
+                   && Street == otherOrder.Street
+                   && City == otherOrder.City;
         }
     }
 }

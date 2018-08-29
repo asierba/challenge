@@ -2,8 +2,13 @@
 {
     public class FraudResult
     {
-        public int OrderId { get; set; }
+        public FraudResult(Order order)
+        {
+            OrderId = order.OrderId;
+        }
 
-        public bool IsFraudulent { get; set; }
+        public int OrderId { get; }
+
+        public bool IsFraudulent => true;
     }
 }

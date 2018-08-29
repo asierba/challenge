@@ -14,9 +14,7 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection
     {
         private readonly IFileSystem _fileSystem;
 
-        public FraudRadar() : this(new FileSystem())
-        {
-        }
+        public FraudRadar() : this(new FileSystem()) { }
 
         public FraudRadar(IFileSystem fileSystem)
         {
@@ -25,48 +23,25 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection
         
         public IEnumerable<FraudResult> Check(string filePath)
         {
-            var orders = ReadOrders(filePath).ToList();
+            var lines = _fileSystem.File.ReadAllLines(filePath);
+            var orders = lines.Select(Order.FromCsv).ToList();
             return CheckFraud(orders);
         }
 
-        private IEnumerable<Order> ReadOrders(string filePath)
-        {
-            var lines = _fileSystem.File.ReadAllLines(filePath);
-            return lines.Select(Order.FromCsv);
-        }
-
-        private static IEnumerable<FraudResult> CheckFraud(List<Order> orders)
+        private static IEnumerable<FraudResult> CheckFraud(IReadOnlyList<Order> orders)
         {
             var fraudResults = new List<FraudResult>();
-            for (int i = 0; i < orders.Count; i++)
+            for (var i = 0; i < orders.Count; i++)
             {
-                var current = orders[i];
-                bool isFraudulent = false;
+                var currentOrder = orders[i];
 
-                for (int j = i + 1; j < orders.Count; j++)
+                for (var j = i + 1; j < orders.Count; j++)
                 {
-                    isFraudulent = false;
+                    var otherOrder = orders[j];
 
-                    if (current.DealId == orders[j].DealId
-                        && current.Email == orders[j].Email
-                        && current.CreditCard != orders[j].CreditCard)
+                    if (otherOrder.IsAFraudOf(currentOrder))
                     {
-                        isFraudulent = true;
-                    }
-
-                    if (current.DealId == orders[j].DealId
-                        && current.State == orders[j].State
-                        && current.ZipCode == orders[j].ZipCode
-                        && current.Street == orders[j].Street
-                        && current.City == orders[j].City
-                        && current.CreditCard != orders[j].CreditCard)
-                    {
-                        isFraudulent = true;
-                    }
-
-                    if (isFraudulent)
-                    {
-                        fraudResults.Add(new FraudResult {IsFraudulent = true, OrderId = orders[j].OrderId});
+                        fraudResults.Add(new FraudResult(otherOrder));
                     }
                 }
             }
