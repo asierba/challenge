@@ -1,9 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Payvision.CodeChallenge.Refactoring.FraudDetection
 {
     public class Order
     {
+        private static readonly Dictionary<string, string> StreetKeyWords = new Dictionary<string, string>
+        {
+            {"st.", "street"},
+            {"rd.", "road"},
+        };
+
+        private static readonly Dictionary<string, string> StateKeyWords = new Dictionary<string, string>
+        {
+            {"il", "illinois"},
+            {"ca", "california"},
+            {"ny", "new york"},
+        };
+
         public int OrderId { get; private set; }
 
         public int DealId { get; private set; }
@@ -24,51 +39,44 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection
         {
             var items = line.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
 
-            var order = new Order
+            return new Order
             {
                 OrderId = Int32.Parse(items[0]),
                 DealId = Int32.Parse(items[1]),
-                Email = items[2].ToLower(),
-                Street = items[3].ToLower(),
+                Email = NormalizeEmail(items[2].ToLower()),
+                Street = NormalizeStreet(items[3].ToLower()),
                 City = items[4].ToLower(),
-                State = items[5].ToLower(),
+                State = NormalizeState(items[5].ToLower()),
                 ZipCode = items[6],
                 CreditCard = items[7]
             };
-            
-            return Normalize(order);
         }
 
-        private static Order Normalize(Order order)
+        private static string NormalizeState(string state) => 
+            StateKeyWords.Aggregate(state, (acc, pair) => acc.Replace(pair.Key, pair.Value));
+
+        private static string NormalizeStreet(string street) => 
+            StreetKeyWords.Aggregate(street, (acc, pair) => acc.Replace(pair.Key, pair.Value));
+
+        private static string NormalizeEmail(string email)
         {
-            order.Email = NormalizeEmail(order);
-            order.Street = NormalizeStreet(order);
-            order.State = NormalizeState(order);
-
-            return order;
+            var emailParts = email.Split(new[] {'@'}, StringSplitOptions.RemoveEmptyEntries);
+            var emailName = RemoveDots(RemoveAfterPlus(emailParts[0]));
+            var emailDomain = emailParts[1];
+            return $"{emailName}@{emailDomain}";
         }
 
-        private static string NormalizeState(Order order)
+        private static string RemoveAfterPlus(string emailName)
         {
-            return order.State.Replace("il", "illinois").Replace("ca", "california").Replace("ny", "new york");
+            var atIndex = emailName.IndexOf("+", StringComparison.Ordinal);
+            return atIndex < 0 ? emailName : emailName.Remove(atIndex);
         }
 
-        private static string NormalizeStreet(Order order)
+        private static string RemoveDots(string emailName)
         {
-            return order.Street.Replace("st.", "street").Replace("rd.", "road");
+            return emailName.Replace(".", "");
         }
 
-        private static string NormalizeEmail(Order order)
-        {
-            var aux = order.Email.Split(new char[] {'@'}, StringSplitOptions.RemoveEmptyEntries);
-
-            var atIndex = aux[0].IndexOf("+", StringComparison.Ordinal);
-
-            aux[0] = atIndex < 0 ? aux[0].Replace(".", "") : aux[0].Replace(".", "").Remove(atIndex);
-
-            return String.Join("@", aux[0], aux[1]);
-        }
-        
         public bool IsAFraudOf(Order otherOrder)
         {
             return IsSameDeal(otherOrder)
