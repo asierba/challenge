@@ -59,14 +59,52 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection.Tests
             result.ElementAt(1).OrderId.Should().Be(4);
         }
         
-        [Fact]
-        public void CheckFraud_EmailsAreTheSame()
+        [Theory]
+        [InlineData(
+@"1,1,bugs@bunny.com, Street1, , , ,11111111111
+2,1,bugs@BUNNY.com, Street2, , , ,22222222222")] // lower case comparison
+        [InlineData(
+@"1,1,bugs@bunny.com, Street1, , , ,11111111111
+2,1,b.ug..s@BUNNY.com, Street2, , , ,22222222222")] // '.' are ignored
+        [InlineData(
+@"1,1,bugs@bunny.com, Street1, , , ,11111111111
+2,1,bugs+stuffafter@BUNNY.com, Street2, , , ,22222222222")] // characters after '+' are ignored
+        public void CheckFraud_EmailsAreNormalizedForComparison(string contents)
         {
-            const string contents = 
-@"1,1,bugs@bunny.com, , , , ,12345689010
-2,1,bugs@BUNNY.com, , , , ,12345689011";
             var result = CheckFraud(contents);
-
+            result.Count().ShouldBeEquivalentTo(1);
+        }
+        
+        [Theory]
+        [InlineData(
+@"1,1,email1@example.com,123 Sesame St.,New York,NY,10011,11111111111
+2,1,email2@example.com,123 sesame st.,New York,NY,10011,22222222222")] // lowercase
+        [InlineData(
+            @"1,1,email1@example.com,123 Sesame Street,New York,NY,10011,11111111111
+2,1,email2@example.com,123 Sesame St.,New York,NY,10011,22222222222")] // st. -> street
+        [InlineData(
+            @"1,1,email1@example.com,123 Main Road,New York,NY,10011,11111111111
+2,1,email2@example.com,123 Main rd.,New York,NY,10011,22222222222")] // rd. -> road
+        public void CheckFraud_StreetsAreNormalizedForComparison(string contents)
+        {
+            var result = CheckFraud(contents);
+            result.Count().ShouldBeEquivalentTo(1);
+        }
+        
+        
+        [Theory]
+        [InlineData(
+            @"1,1,email1@example.com,123 Sesame St.,New York,NY,10011,11111111111
+2,1,email2@example.com,123 Sesame St.,New York,NY,10011,22222222222")] // original
+        [InlineData(
+            @"1,1,email1@example.com,123 Sesame St.,New York,ny,10011,11111111111
+2,1,email2@example.com,123 sesame st.,New York,NY,10011,22222222222")] // lowercase
+        [InlineData(
+            @"1,1,email1@example.com,123 Sesame St.,New York,NY,10011,11111111111
+2,1,email2@example.com,123 Sesame St.,New York,new york,10011,22222222222")] // ny -> new york
+        public void CheckFraud_SatesAreNormalizedForComparison(string contents)
+        {
+            var result = CheckFraud(contents);
             result.Count().ShouldBeEquivalentTo(1);
         }
 
