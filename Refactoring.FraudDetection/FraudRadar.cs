@@ -30,7 +30,6 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection
 
         private static IEnumerable<FraudResult> CheckFraud(IReadOnlyList<Order> orders)
         {
-            var fraudResults = new List<FraudResult>();
             for (var i = 0; i < orders.Count; i++)
             {
                 var currentOrder = orders[i];
@@ -41,12 +40,10 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection
 
                     if (otherOrder.IsAFraudOf(currentOrder))
                     {
-                        fraudResults.Add(new FraudResult(otherOrder));
+                        yield return new FraudResult(otherOrder);
                     }
                 }
             }
-
-            return fraudResults;
         }
     }
 }

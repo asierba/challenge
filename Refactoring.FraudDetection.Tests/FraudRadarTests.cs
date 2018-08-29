@@ -94,24 +94,36 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection.Tests
         
         [Theory]
         [InlineData(
-@"1,1,email1@example.com,123 Sesame St.,New York,NY,10011,11111111111
-2,1,email2@example.com,123 Sesame St.,New York,NY,10011,22222222222")] // original
-        [InlineData(
 @"1,1,email1@example.com,123 Sesame St.,New York,ny,10011,11111111111
 2,1,email2@example.com,123 sesame st.,New York,NY,10011,22222222222")] // lowercase
         [InlineData(
 @"1,1,email1@example.com,123 Sesame St.,New York,NY,10011,11111111111
 2,1,email2@example.com,123 Sesame St.,New York,new york,10011,22222222222")] // ny -> new york
+// BUG illinois gets replaced with illinoislinois
 //        [InlineData(
 //@"1,1,email1@example.com,123 Sesame St.,New York,il,10011,11111111111
-//2,1,email2@example.com,123 Sesame St.,New York,illinois,10011,22222222222")]  // TODO fix bug
+//2,1,email2@example.com,123 Sesame St.,New York,illinois,10011,22222222222")]  
+// BUG california gets replaced with californialifornia
 //        [InlineData(
 //@"1,1,email1@example.com,123 Sesame St.,New York,ca,10011,11111111111
-//2,1,email2@example.com,123 Sesame St.,New York,california,10011,22222222222")] // TODO fix bug ca -> california
+//2,1,email2@example.com,123 Sesame St.,New York,california,10011,22222222222")] 
         public void CheckFraud_SatesAreNormalizedForComparison(string contents)
         {
             var result = CheckFraud(contents);
             result.Count().ShouldBeEquivalentTo(1);
+        }
+        
+        [Fact]
+        public void CheckFraud_MultipleErrors()
+        {
+            const string contents = @"1,1,bugs@bunny.com, Street1, , , ,11111111111
+2,1,bugs@bunny.com, Street1, , , ,22222222222
+3,1,bugs@bunny.com, Street1, , , ,33333333333
+4,1,bugs@bunny.com, Street1, , , ,44444444444";
+            var result = CheckFraud(contents);
+            
+            result.Select(x => x.OrderId).ShouldBeEquivalentTo(new [] {2,3,3,4,4,4}); 
+            // BUG frauds are duplicated in result 
         }
 
 
