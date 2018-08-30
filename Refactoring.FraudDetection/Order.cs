@@ -19,48 +19,73 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection
             {"ny", "new york"},
         };
 
-        public int OrderId { get; private set; }
+        private Order(int orderId, int dealId, string email, string street, string city, string state, string zipCode, string creditCard)
+        {
+            OrderId = orderId;
+            DealId = dealId;
+            Email = email;
+            Street = street;
+            City = city;
+            State = state;
+            ZipCode = zipCode;
+            CreditCard = creditCard;
+        }
 
-        public int DealId { get; private set; }
+        public int OrderId { get; }
 
-        public string Email { get; private set; }
+        public int DealId { get; }
 
-        public string Street { get; private set; }
+        public string Email { get; }
 
-        public string City { get; private set; }
+        public string Street { get; }
 
-        public string State { get; private set; }
+        public string City { get; }
 
-        public string ZipCode { get; private set; }
+        public string State { get; }
 
-        public string CreditCard { get; private set; }
+        public string ZipCode { get; }
+
+        public string CreditCard { get; }
 
         public static Order FromCsv(string line)
         {
             var items = line.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
 
+            var orderId = int.Parse(items[0]);
+            var dealId = int.Parse(items[1]);
+            var email = items[2];
+            var street = items[3];
+            var city = (items[4]);
+            var state = (items[5]);
+            var zipCode = items[6];
+            var creditCard = items[7];
+            
             return new Order
-            {
-                OrderId = Int32.Parse(items[0]),
-                DealId = Int32.Parse(items[1]),
-                Email = NormalizeEmail(items[2].ToLower()),
-                Street = NormalizeStreet(items[3].ToLower()),
-                City = items[4].ToLower(),
-                State = NormalizeState(items[5].ToLower()),
-                ZipCode = items[6],
-                CreditCard = items[7]
-            };
+            (
+                orderId,
+                dealId,
+                email,
+                street,
+                city,
+                state,
+                zipCode,
+                creditCard
+            );
         }
 
+        private static string NormalizeCity(string city) => 
+            city.ToLower();
+
         private static string NormalizeState(string state) => 
-            StateKeyWords.Aggregate(state, (acc, pair) => acc.Replace(pair.Key, pair.Value));
+            StateKeyWords.Aggregate(state.ToLower(), (acc, pair) => acc.Replace(pair.Key, pair.Value));
 
         private static string NormalizeStreet(string street) => 
-            StreetKeyWords.Aggregate(street, (acc, pair) => acc.Replace(pair.Key, pair.Value));
+            StreetKeyWords.Aggregate(street.ToLower(), (acc, pair) => acc.Replace(pair.Key, pair.Value));
 
         private static string NormalizeEmail(string email)
         {
-            var emailParts = email.Split(new[] {'@'}, StringSplitOptions.RemoveEmptyEntries);
+            var fullEmail = email.ToLower();
+            var emailParts = fullEmail.Split(new[] {'@'}, StringSplitOptions.RemoveEmptyEntries);
             var emailName = RemoveDots(RemoveAfterPlus(emailParts[0]));
             var emailDomain = emailParts[1];
             return $"{emailName}@{emailDomain}";
@@ -88,14 +113,15 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection
 
         private bool IsSameDeal(Order otherOrder) => DealId == otherOrder.DealId;
 
-        private bool HasSameEmail(Order otherOrder) => Email == otherOrder.Email;
+        private bool HasSameEmail(Order otherOrder) =>
+            NormalizeEmail(Email) == NormalizeEmail(otherOrder.Email);
 
         private bool HasSameAddress(Order otherOrder)
         {
-            return State == otherOrder.State
+            return NormalizeState(State) == NormalizeState(otherOrder.State)
                    && ZipCode == otherOrder.ZipCode
-                   && Street == otherOrder.Street
-                   && City == otherOrder.City;
+                   && NormalizeStreet(Street) == NormalizeStreet(otherOrder.Street)
+                   && NormalizeCity(City) == NormalizeCity(otherOrder.City);
         }
     }
 }
