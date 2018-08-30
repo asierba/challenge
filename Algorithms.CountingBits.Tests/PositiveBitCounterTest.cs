@@ -54,15 +54,15 @@ namespace CountingBits.Tests
             var timeSpan = Time(Performance);
             Assert.InRange(timeSpan,
                 TimeSpan.Zero,
-                TimeSpan.Parse("00:00:05"));
+                TimeSpan.Parse("00:00:01.35"));
         }
 
         private void Performance()
         {
-            Enumerable.Range(0, 500000)
+            var stuff = Enumerable.Range(0, 500000)
                 .Select(x => bitCounter.Count(x).ToList())
                 .ToList()
-                .ForEach(Console.WriteLine);
+                .Select(i => i.Sum());
         }
 
         [Fact]
