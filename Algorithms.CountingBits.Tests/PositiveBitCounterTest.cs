@@ -54,7 +54,7 @@ namespace CountingBits.Tests
             var timeSpan = Time(Performance);
             Assert.InRange(timeSpan,
                 TimeSpan.Zero,
-                TimeSpan.Parse("00:00:01.35"));
+                TimeSpan.Parse("00:00:00.8"));
         }
 
         private void Performance()

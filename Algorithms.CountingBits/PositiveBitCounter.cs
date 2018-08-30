@@ -18,29 +18,28 @@ namespace Payvision.CodeChallenge.Algorithms.CountingBits
             if (input < 0)
                 throw new ArgumentException(nameof(input));
 
-            var bits = ToBitArray(input).ToList();
+            var bits = ToBitArray(input);
 
-            var numOfOnes = bits.Count(x => x);
-            var indexOfOnes = GetIndexesForOnes(bits);
+            var numOfOnes = 0;
+            var indexOfOnes = new List<int>();
+            for (var i = 0; i < bits.Length; i++)
+            {
+                if (bits[i])
+                {
+                    indexOfOnes.Add(i);
+                    numOfOnes++;
+                }
+            }
             
             return new List<int>{numOfOnes}.Concat(indexOfOnes);
         }
 
-        private static IEnumerable<bool> ToBitArray(int number)
+        private static bool[] ToBitArray(int number)
         {
             var b = new BitArray(new[] {number});
             var bits = new bool[b.Count];
             b.CopyTo(bits, 0);
-            return bits;
-        }
-
-        private static IEnumerable<int> GetIndexesForOnes(IReadOnlyList<bool> bits)
-        {
-            for (var i = 0; i < bits.Count(); i++)
-            {
-                if(bits[i])
-                    yield return i;
-            }
+            return bits.ToArray();
         }
     }
 }
