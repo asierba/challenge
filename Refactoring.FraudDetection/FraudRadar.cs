@@ -5,8 +5,8 @@
 // -----------------------------------------------------------------------
 
 using System.IO.Abstractions;
-using System.Linq;
 using System.Collections.Generic;
+using Refactoring.FraudDetection;
 
 namespace Payvision.CodeChallenge.Refactoring.FraudDetection
 {
@@ -24,7 +24,7 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection
         public IEnumerable<FraudResult> Check(string filePath)
         {
             var lines = _fileSystem.File.ReadAllLines(filePath);
-            var orders = lines.Select(Order.FromCsv).ToList();
+            var orders = CsvToOrderConverter.Convert(lines);
             return CheckFraud(orders);
         }
 

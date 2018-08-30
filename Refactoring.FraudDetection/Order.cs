@@ -19,7 +19,7 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection
             {"ny", "new york"},
         };
 
-        private Order(int orderId, int dealId, string email, string street, string city, string state, string zipCode, string creditCard)
+        public Order(int orderId, int dealId, string email, string street, string city, string state, string zipCode, string creditCard)
         {
             OrderId = orderId;
             DealId = dealId;
@@ -46,32 +46,6 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection
         public string ZipCode { get; }
 
         public string CreditCard { get; }
-
-        public static Order FromCsv(string line)
-        {
-            var items = line.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
-
-            var orderId = int.Parse(items[0]);
-            var dealId = int.Parse(items[1]);
-            var email = items[2];
-            var street = items[3];
-            var city = (items[4]);
-            var state = (items[5]);
-            var zipCode = items[6];
-            var creditCard = items[7];
-            
-            return new Order
-            (
-                orderId,
-                dealId,
-                email,
-                street,
-                city,
-                state,
-                zipCode,
-                creditCard
-            );
-        }
 
         private static string NormalizeCity(string city) => 
             city.ToLower();
