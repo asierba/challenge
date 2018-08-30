@@ -6,12 +6,11 @@
 
 using System.Collections;
 using System.Linq;
+using System;
+using System.Collections.Generic;
 
 namespace Payvision.CodeChallenge.Algorithms.CountingBits
 {
-    using System;
-    using System.Collections.Generic;
-
     public class PositiveBitCounter
     {
         public IEnumerable<int> Count(int input)

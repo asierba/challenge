@@ -4,6 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics;
 using Xunit;
 
 namespace CountingBits.Tests
@@ -45,6 +46,40 @@ namespace CountingBits.Tests
             Assert.Equal(
                 expected: new List<int> { 3, 0, 5, 7 },
                 actual: this.bitCounter.Count(161).ToList());
+        }
+
+        [Fact]
+        public void Count_Performance_Pin()
+        {
+            var timeSpan = Time(Performance);
+            Assert.InRange(timeSpan,
+                TimeSpan.Zero,
+                TimeSpan.Parse("00:00:05"));
+        }
+
+        private void Performance()
+        {
+            Enumerable.Range(0, 500000)
+                .Select(x => bitCounter.Count(x).ToList())
+                .ToList()
+                .ForEach(Console.WriteLine);
+        }
+
+        [Fact]
+        public void Count_Performance_Bait()
+        {
+            var timeSpan = Time(Performance);
+            Assert.InRange(timeSpan,
+                TimeSpan.Zero,
+                TimeSpan.Zero);
+        }
+
+        private TimeSpan Time(Action toTime)
+        {
+            var timer = Stopwatch.StartNew();
+            toTime();
+            timer.Stop();
+            return timer.Elapsed;
         }
     }
 }
