@@ -125,6 +125,27 @@ namespace Payvision.CodeChallenge.Refactoring.FraudDetection.Tests
             result.Select(x => x.OrderId).ShouldBeEquivalentTo(new [] {2,3,3,4,4,4}); 
             // BUG frauds are duplicated in result 
         }
+        
+        [Fact]
+        public void CheckFraud_NullFilePath_ArgumentExceptionExpected()
+        {
+            Assert.Throws<ArgumentException>(() => ExecuteTest(null));
+        }
+        
+        [Fact]
+        public void CheckFraud_CsvLineIsEmpty_ArgumentExceptionExpected()
+        {
+            Assert.Throws<ArgumentException>(() => CheckFraud(@"
+
+1,1,bugs@bunny.com, Street1, , , ,11111111111
+"));
+        }
+        
+        [Fact]
+        public void CheckFraud_CsvLineMissingData_ArgumentExceptionExpected()
+        {
+            Assert.Throws<ArgumentException>(() => CheckFraud("1,1"));
+        }
 
 
         private static List<FraudResult> ExecuteTest(string filePath)

@@ -8,6 +8,7 @@ namespace Refactoring.FraudDetection
     internal static class CsvToOrderConverter
     {
         private const char CsvDelimiter = ',';
+        private const int NumOfColumns = 7;
 
         public static List<Order> Convert(IEnumerable<string> csvRows)
         {
@@ -17,6 +18,10 @@ namespace Refactoring.FraudDetection
         private static Order Convert(string csvRow)
         {
             var columns = csvRow.Split(new[] {CsvDelimiter}, StringSplitOptions.RemoveEmptyEntries);
+
+            if (columns.Length <= NumOfColumns)
+                throw new ArgumentException(
+                    $"{nameof(csvRow)} is empty or incomplete. Each csv row should be composed of {NumOfColumns} columns.");
 
             var orderId = int.Parse(columns[0]);
             var dealId = int.Parse(columns[1]);
